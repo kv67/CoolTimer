@@ -1,9 +1,11 @@
 package ru.kve.cooltimer;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -15,12 +17,14 @@ public class MainActivity extends AppCompatActivity {
   private SeekBar seekBar;
   private TextView textView;
   private Button buttonStart;
+  private ImageView imageView;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
+    imageView = findViewById(R.id.imageView);
     buttonStart = findViewById(R.id.buttonStart);
     textView = findViewById(R.id.textView);
     seekBar = findViewById(R.id.seekBar);
@@ -57,6 +61,30 @@ public class MainActivity extends AppCompatActivity {
           buttonStart.setText("START");
           seekBar.setEnabled(true);
           timer.cancel();
+
+//          imageView.animate().setUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//            @Override
+//            public void onAnimationUpdate(ValueAnimator animation) {
+//              animation.set
+//            }
+//          })
+
+//          imageView.animate().rotation(imageView.getRotation() + 45).setDuration(500).start();
+//          try {
+//            Thread.sleep(500);
+//          } catch (InterruptedException e) {
+//            e.printStackTrace();
+//          }
+//          imageView.animate().rotation(imageView.getRotation() - 90).setDuration(500).start();
+//          try {
+//            Thread.sleep(500);
+//          } catch (InterruptedException e) {
+//            e.printStackTrace();
+//          }
+//          imageView.animate().rotation(imageView.getRotation() + 45).setDuration(500).start();
+
+          final MediaPlayer mp = MediaPlayer.create(MainActivity.this, R.raw.ring_w);
+          mp.start();
         }
       }
 
