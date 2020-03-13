@@ -1,5 +1,6 @@
 package ru.kve.cooltimer;
 
+import android.animation.ValueAnimator;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -18,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
   private TextView textView;
   private Button buttonStart;
   private ImageView imageView;
+  private ImageView imageViewBack;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     setContentView(R.layout.activity_main);
 
     imageView = findViewById(R.id.imageView);
+    imageViewBack = findViewById(R.id.imageViewBack);
     buttonStart = findViewById(R.id.buttonStart);
     textView = findViewById(R.id.textView);
     seekBar = findViewById(R.id.seekBar);
@@ -55,33 +58,36 @@ public class MainActivity extends AppCompatActivity {
     timer = new CountDownTimer(600000, 1000) {
       @Override
       public void onTick(long millisUntilFinished) {
-        if (seekBar.getProgress() > 0) {
-          seekBar.setProgress(seekBar.getProgress() - 1);
-        } else {
+        seekBar.setProgress(seekBar.getProgress() - 1);
+        if (seekBar.getProgress() <= 0) {
           buttonStart.setText("START");
           seekBar.setEnabled(true);
           timer.cancel();
 
-//          imageView.animate().setUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//            @Override
-//            public void onAnimationUpdate(ValueAnimator animation) {
-//              animation.set
-//            }
-//          })
+          imageView.animate().setUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+              if (imageView.getRotation() > 20) {
+                animation.reverse();
+              }
+              if (imageView.getRotation() == 0) {
+                imageView.setVisibility(View.VISIBLE);
+              }
+            }
+          }).rotation(40).setDuration(100).start();
 
-//          imageView.animate().rotation(imageView.getRotation() + 45).setDuration(500).start();
-//          try {
-//            Thread.sleep(500);
-//          } catch (InterruptedException e) {
-//            e.printStackTrace();
-//          }
-//          imageView.animate().rotation(imageView.getRotation() - 90).setDuration(500).start();
-//          try {
-//            Thread.sleep(500);
-//          } catch (InterruptedException e) {
-//            e.printStackTrace();
-//          }
-//          imageView.animate().rotation(imageView.getRotation() + 45).setDuration(500).start();
+          imageViewBack.animate().setStartDelay(100).setUpdateListener(
+              new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                  if (imageViewBack.getRotation() < -20) {
+                    animation.reverse();
+                  }
+                  if (imageViewBack.getRotation() == 0) {
+                    imageView.setVisibility(View.VISIBLE);
+                  }
+                }
+              }).rotation(-40).setDuration(100);
 
           final MediaPlayer mp = MediaPlayer.create(MainActivity.this, R.raw.ring_w);
           mp.start();
