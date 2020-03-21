@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <array name="pref_timer_melody_labels">
+        <item>Ring</item>
+        <item>Ring WAW</item>
+        <item>Bell</item>
+    </array>
+
+    <array name="pref_timer_melody_values">
+        <item>ring</item>
+        <item>ring_waw</item>
+        <item>bell</item>
+    </array>
+
+</resources>

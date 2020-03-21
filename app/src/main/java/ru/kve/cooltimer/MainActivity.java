@@ -3,10 +3,12 @@ package ru.kve.cooltimer;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,14 +20,14 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
   private CountDownTimer timer;
   private SeekBar seekBar;
   private TextView textView;
   private Button buttonStart;
   private ImageView imageView;
-  private ImageView imageViewBack;
+  private SharedPreferences sharedPreferences;
 
   @SuppressLint("SourceLockedOrientationActivity")
   @Override
@@ -34,13 +36,11 @@ public class MainActivity extends AppCompatActivity {
     setContentView(R.layout.activity_main);
     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+    sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     imageView = findViewById(R.id.imageView);
-    imageViewBack = findViewById(R.id.imageViewBack);
     buttonStart = findViewById(R.id.buttonStart);
     textView = findViewById(R.id.textView);
     seekBar = findViewById(R.id.seekBar);
-    seekBar.setMax(600);
-    seekBar.setProgress(60);
 
     seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
       @Override
@@ -62,6 +62,14 @@ public class MainActivity extends AppCompatActivity {
       }
     });
 
+    int interval = Integer.valueOf(sharedPreferences.getString("default_interval", "30"));
+    if (interval > 600) {
+      interval = 600;
+    }
+    seekBar.setMax(600);
+    seekBar.setProgress(interval);
+
+
     timer = new CountDownTimer(600000, 1000) {
       @Override
       public void onTick(long millisUntilFinished) {
@@ -70,41 +78,41 @@ public class MainActivity extends AppCompatActivity {
           buttonStart.setText(getResources().getString(R.string.start_label));
           seekBar.setEnabled(true);
           timer.cancel();
-          try {
-            imageView.animate().setUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-              @Override
-              public void onAnimationUpdate(ValueAnimator animation) {
-                if (imageView.getRotation() > 20) {
-                  animation.reverse();
-                }
-                if (imageView.getRotation() <= 0) {
-                  imageView.setVisibility(View.INVISIBLE);
-                }
-              }
-            }).rotation(40).setDuration(100).start();
 
-            imageViewBack.animate().setStartDelay(100).setUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-              @Override
-              public void onAnimationUpdate(ValueAnimator animation) {
-                if (imageViewBack.getRotation() < -20) {
-                  animation.reverse();
+          if (sharedPreferences.getBoolean("enable_sound", true)) {
+            String melody = sharedPreferences.getString("timer_melody", "ring");
+            int id = R.raw.ring;
+            if (melody.equals("ring")) {
+              id = R.raw.ring;
+            } else
+              if (melody.equals("ring_waw")) {
+                id = R.raw.ring_w;
+              } else
+                if (melody.equals("bell")) {
+                  id = R.raw.bell;
                 }
-                if (imageViewBack.getRotation() >= 0) {
-                  imageView.setVisibility(View.VISIBLE);
-                }
-              }
-            }).rotation(-40).setDuration(100);
 
-            final MediaPlayer mp = MediaPlayer.create(MainActivity.this, R.raw.ring_w);
+            MediaPlayer mp = MediaPlayer.create(MainActivity.this, id);
             mp.start();
-          } finally {
-            imageViewBack.setRotation(0);
-            imageView.setRotation(0);
-            if (imageView.getVisibility() != View.VISIBLE) {
-              imageView.setVisibility(View.VISIBLE);
-            }
           }
 
+          imageView.animate().setUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+
+//              if (imageView.getRotation() == 0 && animation.getCurrentPlayTime() > 100) {
+//                Log.i("STOP", "Stop animation " + animation.getCurrentPlayTime());
+//
+//                  imageView.animate().rotation(-40).setDuration(100).start();
+//
+//              }
+              //  Log.i("STOP", "Stop animation " + animation.getCurrentPlayTime());
+              if (animation.getRepeatCount() == 0) {
+                animation.setRepeatCount(1);
+                animation.setRepeatMode(ValueAnimator.REVERSE);
+              }
+            }
+          }).rotation(40).setDuration(100).start();
         }
       }
 
@@ -113,7 +121,10 @@ public class MainActivity extends AppCompatActivity {
         // not used
       }
     };
+
+    sharedPreferences.registerOnSharedPreferenceChangeListener(this);
   }
+
 
   public void onClickStart(View view) {
     if (((TextView) view).getText().toString().equals(getResources().getString(R.string.start_label))) {
@@ -147,5 +158,22 @@ public class MainActivity extends AppCompatActivity {
         return true;
       }
     return super.onOptionsItemSelected(item);
+  }
+
+  @Override
+  public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+    if (key.equals("default_interval")) {
+      int interval = Integer.valueOf(sharedPreferences.getString("default_interval", "30"));
+      if (interval > 600) {
+        interval = 600;
+      }
+      seekBar.setProgress(interval);
+    }
+  }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
   }
 }
