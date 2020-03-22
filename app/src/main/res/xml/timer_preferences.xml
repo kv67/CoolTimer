@@ -4,19 +4,26 @@
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="enable_sound"
-        android:summaryOff="Sound Disabled"
-        android:summaryOn="Sound Enabled"
-        android:title="Enable Sound" />
+        android:summaryOff="@string/sound_disabled_value"
+        android:summaryOn="@string/sound_enabled_value"
+        android:title="@string/enable_sound_setting" />
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="enable_animation"
+        android:summaryOff="@string/animation_disabled_value"
+        android:summaryOn="@string/animation_enabled_value"
+        android:title="@string/enable_animation_setting" />
 
     <ListPreference
         android:defaultValue="ring"
         android:entries="@array/pref_timer_melody_labels"
         android:entryValues="@array/pref_timer_melody_values"
         android:key="timer_melody"
-        android:title="Timer Melody" />
+        android:title="@string/timer_melody" />
 
     <EditTextPreference
         android:defaultValue="30"
         android:key="default_interval"
-        android:title="Default Interval" />
+        android:title="@string/default_interval" />
 </PreferenceScreen>

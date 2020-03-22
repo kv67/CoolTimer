@@ -2,6 +2,7 @@ package ru.kve.cooltimer;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.preference.EditTextPreference;
@@ -9,7 +10,7 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
-public class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceChangeListener {
   @Override
   public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
     addPreferencesFromResource(R.xml.timer_preferences);
@@ -18,6 +19,26 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     for (int i = 0; i < count; i++) {
       onSharedPreferenceChanged(sharedPreferences, getPreferenceScreen().getPreference(i).getKey());
     }
+
+    Preference preference = findPreference("default_interval");
+    preference.setOnPreferenceChangeListener(this);
+  }
+
+  @Override
+  public boolean onPreferenceChange(Preference preference, Object newValue) {
+    if (preference.getKey().equals("default_interval")) {
+      try {
+        int interval = Integer.parseInt((String) newValue);
+        if (interval < 0 || interval > 600) {
+          Toast.makeText(getContext(), R.string.interval_between_msg, Toast.LENGTH_LONG).show();
+        } else {
+          return true;
+        }
+      } catch (NumberFormatException err) {
+        Toast.makeText(getContext(), R.string.interval_must_be_integer, Toast.LENGTH_LONG).show();
+      }
+    }
+    return false;
   }
 
   @Override

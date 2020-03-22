@@ -2,9 +2,9 @@
 <resources>
 
     <array name="pref_timer_melody_labels">
-        <item>Ring</item>
-        <item>Ring WAW</item>
-        <item>Bell</item>
+        <item>@string/sound_ring</item>
+        <item>@string/sound_ring_w</item>
+        <item>@string/sound_bell</item>
     </array>
 
     <array name="pref_timer_melody_values">

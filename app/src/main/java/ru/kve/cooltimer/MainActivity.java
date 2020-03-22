@@ -22,6 +22,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
+  private static final String DEFAULT_INTERVAL = "default_interval";
+
   private CountDownTimer timer;
   private SeekBar seekBar;
   private TextView textView;
@@ -62,10 +64,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
       }
     });
 
-    int interval = Integer.valueOf(sharedPreferences.getString("default_interval", "30"));
-    if (interval > 600) {
-      interval = 600;
-    }
+    int interval = Integer.parseInt(sharedPreferences.getString(DEFAULT_INTERVAL, "30"));
     seekBar.setMax(600);
     seekBar.setProgress(interval);
 
@@ -96,23 +95,31 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             mp.start();
           }
 
-          imageView.animate().setUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
+          if (sharedPreferences.getBoolean("enable_animation", true)) {
+            imageView.animate().setUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+              @Override
+              public void onAnimationUpdate(ValueAnimator animation) {
 
-//              if (imageView.getRotation() == 0 && animation.getCurrentPlayTime() > 100) {
-//                Log.i("STOP", "Stop animation " + animation.getCurrentPlayTime());
-//
-//                  imageView.animate().rotation(-40).setDuration(100).start();
-//
-//              }
-              //  Log.i("STOP", "Stop animation " + animation.getCurrentPlayTime());
-              if (animation.getRepeatCount() == 0) {
-                animation.setRepeatCount(1);
-                animation.setRepeatMode(ValueAnimator.REVERSE);
+                if (imageView.getRotation() == 0 && animation.getCurrentPlayTime() > 100) {
+                  imageView.animate().setUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                      if (animation.getRepeatCount() == 0) {
+                        animation.setRepeatCount(1);
+                        animation.setRepeatMode(ValueAnimator.REVERSE);
+                      }
+                    }
+                  }).rotation(-40).setDuration(100).start();
+
+                }
+
+                if (animation.getRepeatCount() == 0) {
+                  animation.setRepeatCount(1);
+                  animation.setRepeatMode(ValueAnimator.REVERSE);
+                }
               }
-            }
-          }).rotation(40).setDuration(100).start();
+            }).rotation(40).setDuration(100).start();
+          }
         }
       }
 
@@ -162,11 +169,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
   @Override
   public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-    if (key.equals("default_interval")) {
-      int interval = Integer.valueOf(sharedPreferences.getString("default_interval", "30"));
-      if (interval > 600) {
-        interval = 600;
-      }
+    if (key.equals(DEFAULT_INTERVAL)) {
+      int interval = Integer.parseInt(sharedPreferences.getString(DEFAULT_INTERVAL, "30"));
       seekBar.setProgress(interval);
     }
   }

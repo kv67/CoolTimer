@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Крутой таймер</string>
+    <string name="start_label">СТАРТ</string>
+    <string name="stop_label">СТОП</string>
+    <string name="sound_bell">Колокольчик</string>
+    <string name="sound_ring">Звонок</string>
+    <string name="sound_ring_w">Звонок 2</string>
+    <string name="enable_sound_setting">Использовать звук</string>
+    <string name="sound_disabled_value">Звук выключен</string>
+    <string name="sound_enabled_value">Звук включен</string>
+    <string name="timer_melody">Мелодия таймера</string>
+    <string name="default_interval">Интервал по-умолчанию (в сек.)</string>
+    <string name="interval_between_msg">Интервал по-умолчанию должен быть между 0 и 600!!!</string>
+    <string name="interval_must_be_integer">Пожалуйста, укажите цифровое значение!!!</string>
+    <string name="settings">Настройки</string>
+    <string name="about">О программе</string>
+    <string name="enable_animation_setting">Использовать анимацию</string>
+    <string name="animation_enabled_value">Анимация включена</string>
+    <string name="animation_disabled_value">Анимация выключена</string>
+</resources>
